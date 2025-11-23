@@ -1,0 +1,14 @@
+[Unit]
+Description=Daily validation and backup of Claude Code state files
+Documentation=man:systemd.timer(5)
+
+[Timer]
+# Run daily at 4:00 AM (low activity time)
+OnCalendar=*-*-* 04:00:00
+# Run 5 minutes after boot if missed
+OnBootSec=5min
+Persistent=true
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target

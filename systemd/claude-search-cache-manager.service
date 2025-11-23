@@ -1,0 +1,13 @@
+[Unit]
+Description=Cleanup and optimize Claude context search cache
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/claude-search-cache-manager.sh --cleanup
+MemoryMax=30M
+CPUQuota=5%%
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

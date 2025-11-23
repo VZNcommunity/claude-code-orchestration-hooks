@@ -1,0 +1,14 @@
+[Unit]
+Description=Adaptive budget management and weekly analysis
+Documentation=man:systemd.service(5)
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/claude-budget-analyzer.sh
+MemoryMax=50M
+CPUQuota=10%%
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

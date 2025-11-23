@@ -1,0 +1,13 @@
+[Unit]
+Description=Generate weekly hooks performance report
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/claude-performance-monitor.sh --report
+MemoryMax=50M
+CPUQuota=10%%
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

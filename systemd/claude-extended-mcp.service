@@ -1,0 +1,22 @@
+[Unit]
+Description=Claude Extended MCP Server Launcher
+After=default.target
+
+[Service]
+Type=simple
+ExecStart=/home/vzith/.local/bin/claude-extended-launcher.py daemon
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+# Environment
+Environment=PATH=/usr/local/bin:/usr/bin:/bin:/home/vzith/.local/bin
+Environment=HOME=/home/vzith
+
+# Security (optional hardening)
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target

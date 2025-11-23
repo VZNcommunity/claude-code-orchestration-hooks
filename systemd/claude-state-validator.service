@@ -1,0 +1,17 @@
+[Unit]
+Description=Validate and backup Claude Code state files
+Documentation=file:///home/vzith/.local/bin/claude-state-validator.sh
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/claude-state-validator.sh
+MemoryMax=50M
+CPUQuota=10%%
+StandardOutput=journal
+StandardError=journal
+TimeoutSec=60
+Restart=no
+
+[Install]
+WantedBy=default.target

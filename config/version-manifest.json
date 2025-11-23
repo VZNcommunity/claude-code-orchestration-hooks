@@ -1,0 +1,74 @@
+{
+  "version": "1.0.0",
+  "last_update": "2025-11-23T21:46:00Z",
+  "hooks": {
+    "delegation-check.sh": {
+      "version": "1.0.0",
+      "checksum": "2abb3d7cb962512c0e85e21fde634dadc8d6d39428360b4bc21d78fb96510654",
+      "size": 3952,
+      "last_modified": "2025-11-23T20:45:36+01:00"
+    },
+    "delegation-warning.sh": {
+      "version": "1.0.0",
+      "checksum": "ca664bb65cabdc09e3f16efc07adf95fba2fe3835f628116af3f13c139c57119",
+      "size": 1558,
+      "last_modified": "2025-11-23T20:45:58+01:00"
+    },
+    "context-monitor.sh": {
+      "version": "1.0.0",
+      "checksum": "999edb788bcd88be45bde4419287e99d45114387b841850a9e137204a8ca563c",
+      "size": 1949,
+      "last_modified": "2025-11-23T20:46:24+01:00"
+    },
+    "output-monitor.sh": {
+      "version": "1.0.0",
+      "checksum": "be59c1bf9f50daa2a060a4ff7a21f6adc607999cf6baad2234b907252b62c98a",
+      "size": 2352,
+      "last_modified": "2025-11-23T20:46:52+01:00"
+    },
+    "claude-state-validator.sh": {
+      "version": "1.0.0",
+      "checksum": "2a9e28e7106c0a0455bbb04c175ddce65e805a37d18747b2c6a960d3cf487d45",
+      "size": 7252,
+      "last_modified": "2025-11-23T21:24:23+01:00"
+    },
+    "claude-performance-monitor.sh": {
+      "version": "1.0.0",
+      "checksum": "906dbfc0532e5b7afc1cd825432c5bec72b5e7c5b92d88cbfb118c98b4bea8ed",
+      "size": 8575,
+      "last_modified": "2025-11-23T21:35:13+01:00"
+    },
+    "claude-search-cache-manager.sh": {
+      "version": "1.0.0",
+      "checksum": "d97ce293bd6bd1eb88a3f01fd1d6ee3b8049d43cbf7e829b94ff2ee0595967de",
+      "size": 7082,
+      "last_modified": "2025-11-23T21:36:13+01:00"
+    },
+    "claude-context-monitor.sh": {
+      "version": "1.0.0",
+      "checksum": "ae7f47234354db50bc62a1b182538f6d1a28f58bbbab3780087f0e17e4b4ba9b",
+      "size": 6267,
+      "last_modified": "2025-11-23T21:40:07+01:00"
+    },
+    "claude-budget-analyzer.sh": {
+      "version": "1.0.0",
+      "checksum": "234a7a92b2b27e9513bff294122c400ae4fdecb875bf205ee77451b8f5734a98",
+      "size": 10608,
+      "last_modified": "2025-11-23T21:43:36+01:00"
+    }
+  },
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2025-11-23",
+      "changes": [
+        "Initial release: Core hook system (delegation-check, delegation-warning, context-monitor, output-monitor)",
+        "Self-healing state validation with automatic repair",
+        "Performance monitoring with slow hook detection",
+        "Search cache management with TTL and LRU eviction",
+        "Context usage monitoring with desktop notifications",
+        "Adaptive budget management with weekly analysis"
+      ]
+    }
+  ]
+}

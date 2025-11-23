@@ -1,0 +1,14 @@
+[Unit]
+Description=Claude hooks version checking and updates
+Documentation=man:systemd.service(5)
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/claude-hooks-updater.sh
+MemoryMax=30M
+CPUQuota=5%%
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

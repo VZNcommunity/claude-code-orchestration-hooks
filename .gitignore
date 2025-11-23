@@ -1,0 +1,44 @@
+# State files with actual data (private)
+*.log
+*.csv
+shared-budget.json
+search-cache.json
+orchestrator-session.json
+
+# Backups
+backups/
+*.backup
+*.backup-*
+
+# Personal data
+context-alerts.log
+budget-analysis.log
+hooks-update.log
+delegation-violations.log
+hooks-performance.log
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+*~
+.DS_Store
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# Environment files
+.env
+.env.local
+secrets.env
+
+# OS files
+Thumbs.db
+desktop.ini
+
+# Keep example/template files
+!*.example
+!*-schema.json
+!*-template.json
