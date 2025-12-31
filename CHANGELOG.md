@@ -107,6 +107,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - State files protected with user-only permissions
 - Checksum verification for hook integrity
 
+## [1.1.0] - 2025-12-31
+
+### Changed
+
+#### Minimal Hooks Configuration
+- **Switched to minimal hooks mode** to resolve auto-accept permission interference
+- Disabled all PreToolUse hooks:
+  - `progress-validator.sh` - Was blocking operations before execution
+  - `context-monitor.sh` (PreToolUse) - Interfered with all tool calls
+  - `loop-checkpoint.sh` - Blocked all operations with universal matcher
+- Disabled aggressive PostToolUse hooks:
+  - `delegation-warning.sh` (on Write|Edit) - Blocked file modification auto-accept
+  - `review-enforcer.sh` (on Write|Edit) - Forced manual review approval
+  - `auto-commit.sh` (on Write|Edit) - Interfered with edit workflow
+  - `consistency-tracker.sh` (universal "*" matcher) - Blocked all tool operations
+  - `auto-commit.sh` (on TodoWrite) - Interfered with task tracking
+
+#### Active Hooks (Minimal Configuration)
+- `output-monitor.sh` (PostToolUse: Grep|Glob|Read|Bash)
+  - Large output detection still active
+  - Context debt tracking operational
+  - No interference with Edit/Write permissions
+- `auto-review-trigger.sh` (PostToolUse: Bash)
+  - Code review suggestions after delegation
+  - Non-blocking notifications only
+
+#### Systemd Timers (Unchanged)
+- All 6 timers remain active and operational
+- Timer-based services run independently
+- No interference with interactive tool operations
+
+### Added
+- `settings.minimal.json` - Reference configuration for minimal mode
+- `CLAUDE.md.reference` - Updated documentation with hooks configuration
+- Configuration modes documentation in README
+- Trade-off analysis: minimal vs full mode
+
+### Reason for Change
+PreToolUse and aggressive PostToolUse hooks prevented Claude Code from automatically accepting Edit/Write operations that were explicitly allowed in permissions configuration (`~/.claude/settings.json`). Every file modification required manual user approval despite permissions being set to auto-accept, severely impacting workflow efficiency.
+
+The minimal configuration preserves monitoring capabilities (via systemd timers) while eliminating permission interference.
+
 ## [Unreleased]
 
 ### Planned
@@ -123,4 +165,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History
 
+- **1.1.0** (2025-12-31) - Minimal configuration mode (auto-accept fix)
 - **1.0.0** (2025-11-23) - Initial release with full orchestration system

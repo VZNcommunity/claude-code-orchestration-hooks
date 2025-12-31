@@ -1,6 +1,6 @@
 # Claude Code Orchestration Hooks
 
-**Version:** 1.0.0
+**Version:** 1.1.0
 **Status:** Private Development
 **Created:** 2025-11-23
 
@@ -115,7 +115,7 @@ The original full configuration with all PreToolUse and PostToolUse hooks is doc
 **Active Hooks:** 2/9 (output-monitor, auto-review-trigger)
 **Timers Active:** 6/6
 **Hooks Verified:** 9/9 with checksums
-**Version:** 1.0.0
+**Version:** 1.1.0
 **Last Update:** 2025-12-31
 **Last Validation:** 2025-11-23
 
