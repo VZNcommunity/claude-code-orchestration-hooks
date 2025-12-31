@@ -48,6 +48,41 @@ This project implements a comprehensive automation layer for Claude Code that:
 | claude-budget-analyzer | Weekly Mon 9 AM | Budget optimization |
 | claude-performance-monitor | Weekly Sun 8 PM | Performance reports |
 
+## Configuration Modes (2025-12-31)
+
+### Minimal Configuration (Current)
+
+**Status:** Active since 2025-12-31
+
+Due to interference with Claude Code's auto-accept permissions for Edit/Write operations, the hooks system now runs in **minimal mode**.
+
+**Active Hooks:**
+- `output-monitor.sh` (PostToolUse: Grep|Glob|Read|Bash) - Large output detection and context debt tracking
+- `auto-review-trigger.sh` (PostToolUse: Bash) - Code review suggestions after delegation
+
+**Disabled Hooks:**
+- **All PreToolUse hooks:** progress-validator, context-monitor, loop-checkpoint
+  - These ran before every tool call and blocked Edit/Write auto-accept
+- **PostToolUse on Write|Edit:** delegation-warning, review-enforcer, auto-commit
+  - These interfered with automatic permission handling
+- **PostToolUse on "*":** consistency-tracker
+  - Universal matcher caused blocking on all operations
+- **PostToolUse on TodoWrite:** auto-commit
+
+**Systemd Timers:** Still active - these run independently and don't interfere with tool operations.
+
+**Configuration File:** `settings.minimal.json` (reference configuration)
+
+**Reason for Change:** PreToolUse and aggressive PostToolUse hooks were preventing Claude Code from automatically accepting Edit/Write operations that were explicitly allowed in permissions, requiring manual user approval for every file change.
+
+### Full Configuration (Archived)
+
+The original full configuration with all PreToolUse and PostToolUse hooks is documented in git history (commits before 2025-12-31). It can be restored if the auto-accept permission issues are resolved in future Claude Code versions.
+
+**Trade-offs:**
+- **Minimal mode:** Better user experience (no permission blocks), reduced enforcement
+- **Full mode:** Strong orchestration enforcement, but blocks auto-accept permissions
+
 ## Installation Status
 
 **Current Deployment:** Fully operational on personal system
@@ -76,9 +111,12 @@ This project implements a comprehensive automation layer for Claude Code that:
 
 ## Current State
 
+**Configuration Mode:** Minimal (2025-12-31)
+**Active Hooks:** 2/9 (output-monitor, auto-review-trigger)
 **Timers Active:** 6/6
 **Hooks Verified:** 9/9 with checksums
 **Version:** 1.0.0
+**Last Update:** 2025-12-31
 **Last Validation:** 2025-11-23
 
 ## Performance
@@ -129,6 +167,14 @@ When ready to make this repository public, complete these tasks:
 - Implemented adaptive budget management
 - Added version-controlled auto-updates
 - Deployed all systemd timers
+
+**Session 3 (2025-12-31):**
+- Switched to minimal hooks configuration
+- Disabled PreToolUse hooks (blocking Edit/Write auto-accept)
+- Disabled aggressive PostToolUse hooks
+- Retained only non-blocking hooks (output-monitor, auto-review-trigger)
+- Documented configuration modes and trade-offs
+- Created `settings.minimal.json` reference configuration
 
 ## Repository Structure
 
