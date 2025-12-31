@@ -1,0 +1,523 @@
+# CLAUDE.md
+
+Guidance for Claude Code when working in this Arch Linux environment.
+
+## Standardized Timestamp Convention (2025-12-10)
+
+**MANDATORY**: All file alterations MUST include timestamps in the format:
+- **Date only**: `(YYYY-MM-DD)` for general changes
+- **Date + time**: `(YYYY-MM-DD HH:MM)` for time-sensitive changes
+- **Inline comments**: `# (YYYY-MM-DD)` or `// (YYYY-MM-DD)` in code
+
+**Examples**:
+```markdown
+## Feature Name (2025-12-10)
+- **Config Change** (2025-12-10 22:15): Description
+```
+
+```bash
+# Updated Gemini model (2025-12-10)
+GEMINI_ENDPOINT="https://..."
+```
+
+**Enforcement**: PreToolUse hooks validate timestamp presence on Write/Edit operations.
+
+## Environment
+
+- **Home Directory**: `/home/vzith`
+- **Development**: `~/Development/` (active projects)
+- **Projects**: `~/Projects/` (additional files)
+- **System**: Arch Linux with Node.js, Python, Docker, Git
+- **Claude Code Plan**: Max5 ($100/month, upgraded from Pro 2025-11-23)
+  - Limits: ~50-200 prompts per 5-hour cycle, 140-280h Sonnet 4/week
+  - Shared across claude.ai, desktop, mobile, and Claude Code
+  - Dynamic limits, reset every 5 hours (not transparent token counts)
+
+## Orchestration-First Operation Model
+
+**CRITICAL**: Claude Code's role is **orchestration**, not execution. Minimize token usage by delegating to partner AI tools.
+
+### Pre-Task Checklist
+
+1. **Search documentation**: `mcp__claude-context__search_code --path /home/vzith/Development --query "keywords"`
+2. **Check recent changes**: Read `TAILSCALE-EXIT-NODE-SETUP.md` or project-specific CLAUDE.md files
+3. **Determine delegation** (see Decision Tree)
+
+### Delegation Decision Tree
+
+| Task Type | Delegate To | Command |
+|-----------|-------------|---------|
+| Research/Analysis | OpenCode + Grok | `opencode run --model opencode/grok-code "query"` |
+| Documentation | OpenCode + Grok | `opencode run --model opencode/grok-code "generate docs for X"` |
+| Code Generation | OpenCode + LFM2 | `opencode run "implement feature X"` |
+| Boilerplate/Templates | OpenCode + LFM2 | `opencode run "create boilerplate for X"` |
+| Session Summaries | OpenCode + LFM2 | `opencode run "summarize changes: [context]"` |
+| Test Generation | OpenCode + LFM2 | `opencode run "write tests for X"` |
+| Orchestration | Claude Code | Decision-making, tool coordination, git ops |
+| MCP Operations | Claude Code | Semantic search, complex multi-tool tasks |
+
+### Available AI Models
+
+| Tool | Model | Use Case | Cost |
+|------|-------|----------|------|
+| OpenCode | `opencode/grok-code` | Research, analysis, docs | API (paid) |
+| OpenCode | `lfm2-local/lfm2-8b` | Code gen, summaries | Free (local) |
+| OpenCode | `opencode/big-pickle` | Alternative API | API (paid) |
+| Claude Code | Sonnet 4.5 | Orchestration, reasoning | Token budget |
+
+**Token Budget**: Claude Code consumes <20% of total AI work. Delegate ALL research, code generation, and documentation.
+
+### Documentation Search
+
+**Index first** (if needed):
+```bash
+mcp__claude-context__index_codebase --path /home/vzith/Development  # 164K files, 30-60min
+mcp__claude-context__search_code --path /home/vzith/Development --query "keywords"
+```
+
+**⚠️ DO NOT index entire `/home/vzith`** (500K+ files, 2-4GB RAM, rate limit risk)
+
+### Session-End Workflow
+
+1. Delegate summary: `opencode run "Summarize session changes: [context]"`
+2. Update CLAUDE.md (if significant changes)
+3. Update TAILSCALE-EXIT-NODE-SETUP.md (if network changes)
+4. Commit: `git add CLAUDE.md && git commit -m "docs: update [summary]"`
+
+## Available Projects
+
+- **claude-context/**: TypeScript MCP server (`pnpm install`, `pnpm build`, `pnpm test`)
+- **Claude-Code-Usage-Monitor/** (2025-11): Real-time token usage monitor for Claude Code sessions
+  - **Status**: v3.1.0, production-ready with export functionality
+  - **Installation**: `pip install -e .` (dev mode) or `uv tool install .` (isolated)
+  - **Commands**: `claude-monitor --plan max5`, `cmonitor` (aliases)
+  - **Features**: Real-time monitoring, P90 analysis, CSV/JSON export, daily/monthly views
+  - **Note**: Tracks actual API token consumption from ~/.claude.json, NOT plan limits
+  - Plan limits are dynamic/opaque; tool shows raw token usage for cost tracking
+  - **Export**: `--export-csv <file>`, `--export-json <file>` for usage data
+  - **Views**: `--view realtime|daily|monthly` with aggregated statistics
+  - **Config**: `~/.claude-monitor/` (settings, logs)
+  - **Tracking**: pt:2 (project tracker integration)
+- **vision-launcher/**: Electron+React service dashboard (`vision`, `vision --dev`)
+- **trading212-analytics/**: Streamlit portfolio analytics (port 8501, via Vision)
+- **remote-access-hub/**: Tailscale remote access (`remote-access start/dev/stop`)
+- **freecad-mcp/**: MCP server for FreeCAD integration (`npm install`, `npm run build`)
+  - Git worktrees: main, develop (`freecad-mcp-dev/`), feature/k-bot (`freecad-mcp-kbot/`)
+  - Tools: import_step, import_stl, launch_freecad, execute_script
+  - Docs: QUICKSTART.md, USAGE.md
+- **kbot/**: K-Scale Labs humanoid robot repository
+  - K-OS (Rust), K-Sim, K-VLA
+  - OnShape CAD: https://cad.onshape.com/publications/e15cf8edefacbba3009917c0/
+- **git-worktree-trial/**: Git worktree learning sandbox
+  - Demo of git worktree workflow (main, develop, feature, hotfix)
+  - See CHEATSHEET.md for commands
+- **claude-orchestrator/** (2025-11): MCP server for delegation policy enforcement
+  - **Status**: v0.2.0, enhanced with automatic delegation & budget tracking
+  - **Location**: `~/Development/claude-orchestrator/`
+  - **Features**:
+    - Automatic code generation detection & delegation triggers
+    - Session & daily token budget limits with real-time tracking
+    - Actual token reads from ~/.claude.json (not estimates)
+    - Desktop notifications via notify-send (50%, 75%, 90% thresholds)
+    - Violation logging to ~/.context/delegation-violations.log
+    - Enhanced session reports with actionable recommendations
+    - Shared budget state in ~/.context/shared-budget.json
+  - **MCP Tools**: check_delegation_policy, delegate_task, get_session_stats, session_init
+  - **Default Budgets**: 10k tokens/session, 50k tokens/day
+  - **State Files**: ~/.context/orchestrator-session.json, ~/.context/shared-budget.json
+  - **Logs**: ~/.context/delegation-violations.log (30-day retention)
+  - **Integration**: Syncs with Claude-Code-Usage-Monitor via shared budget
+  - **Build**: `pnpm build` (TypeScript → dist/)
+- **claude-code-orchestration-hooks/** (2025-11-23): Self-driving orchestration system for Claude Code
+  - **Status**: v1.0.0, minimal configuration (2025-12-31)
+  - **Location**: `~/Development/claude-code-orchestration-hooks/`
+  - **GitHub**: https://github.com/VZNcommunity/claude-code-orchestration-hooks (private)
+  - **Tracking**: pt:26 (completed), pt:27 (public release prep - pending)
+  - **Goal**: 50-75% token reduction via automated delegation enforcement
+  - **Hooks Configuration** (2025-12-31):
+    - **Active Hooks** (minimal, non-blocking):
+      - `output-monitor.sh` (PostToolUse: Grep|Glob|Read|Bash) - Large output detection
+      - `auto-review-trigger.sh` (PostToolUse: Bash) - Code review suggestions after delegation
+    - **Disabled Hooks** (were blocking Edit/Write auto-accept):
+      - All PreToolUse hooks (progress-validator, context-monitor, loop-checkpoint)
+      - PostToolUse on Write|Edit (delegation-warning, review-enforcer, auto-commit)
+      - PostToolUse on "*" (consistency-tracker)
+      - PostToolUse on TodoWrite (auto-commit)
+    - **Config**: `~/.claude/settings.json` (minimal hooks only)
+    - **Reason**: PreToolUse and aggressive PostToolUse hooks interfered with auto-accept permissions
+  - **Installed**:
+    - Hooks: `~/.local/bin/` (9 scripts, 49.6KB) - available but not active
+    - Systemd: `~/.config/systemd/user/` (12 units)
+    - State: `~/.context/` (shared-budget.json, logs, cache)
+  - **Timers** (still active):
+    - Every 2 min: Context monitoring
+    - Hourly: Cache cleanup
+    - Daily 3 AM: Hook updates
+    - Daily 4 AM: State validation
+    - Weekly Mon 9 AM: Budget optimization
+    - Weekly Sun 8 PM: Performance reports
+  - **Features** (limited with minimal hooks):
+    - Large output detection and context debt tracking
+    - Auto-trigger code review after delegation
+    - Self-healing state validation with auto-repair (via timers)
+    - TTL-based search caching (1h, LRU eviction, via timers)
+    - SHA256 checksum verification with rollback capability
+  - **Quick Commands**:
+    - `systemctl --user list-timers | grep claude` - Check timer status
+    - `~/.local/bin/claude-hooks-updater.sh --verify` - Verify integrity
+    - `~/.local/bin/claude-budget-analyzer.sh --report` - Budget report
+  - **Docs**: README.md, CHANGELOG.md, docs/IMPLEMENTATION-SUMMARY.md
+- **lazy-mcp/** (2025-12-03): MCP proxy with lazy loading for reduced context usage
+  - **Status**: Operational, deployed as user-scope MCP
+  - **Location**: `~/Development/lazy-mcp/`
+  - **GitHub**: https://github.com/voicetreelab/lazy-mcp
+  - **Purpose**: Load MCP tools on-demand instead of at startup (95% context reduction)
+  - **Components**:
+    - Binary: `~/Development/lazy-mcp/build/mcp-proxy`
+    - Config: `~/.claude/lazy-mcp-config.json`
+    - Hierarchy: `~/.claude/mcp_hierarchy/`
+  - **Managed MCPs** (lazy-loaded):
+    - `claude-context` (4 tools): index_codebase, search_code, clear_index, get_indexing_status
+    - `claude-orchestrator` (4 tools): check_delegation_policy, delegate_task, get_session_stats, session_init
+  - **How it works**:
+    - Exposes 2 meta-tools: `get_tools_in_category`, `execute_tool`
+    - Full tool schemas load only when invoked
+    - Saves ~34k+ tokens per session
+  - **Commands**:
+    - Regenerate hierarchy: `~/Development/lazy-mcp/build/structure_generator --config ~/.claude/lazy-mcp-config.json --output ~/.claude/mcp_hierarchy`
+    - Check status: `claude mcp list`
+  - **Adding new MCPs**:
+    1. Edit `~/.claude/lazy-mcp-config.json` → add to `mcpServers`
+    2. Regenerate hierarchy (command above)
+    3. Restart Claude Code
+- **wiki/** (2025-12-12): Multi-repo wiki with Wiki.js + GitHub Pages export
+  - **Status**: Operational, auto-syncing from project repos
+  - **Location**: `~/wiki/` (Docker stack), `~/wiki-content/` (git repo)
+  - **Access**: http://localhost:3030 (Wiki.js)
+  - **Purpose**: Centralized documentation with git-backed content, tiered visibility
+  - **Components**:
+    - Docker: Wiki.js + PostgreSQL (`docker compose -f ~/wiki/docker-compose.yml`)
+    - Content: `~/wiki-content/` (git repo, auto-synced)
+    - Export: `~/Development/vzith-portfolio-pages/` (GitHub Pages)
+  - **Structure**:
+    - `projects/` - Public portfolio (11 projects)
+    - `infrastructure/` - Private (network, services)
+    - `automations/` - Private (hooks, timers)
+    - `development/` - Mixed (workflows, tools)
+  - **Timers**:
+    - Every 2h: `wiki-aggregator.timer` (sync from repos)
+    - Weekly Sun 6AM: `wiki-github-pages.timer` (export public pages)
+  - **Scripts**:
+    - `~/.local/bin/wiki-aggregator.sh` - Sync docs from projects
+    - `~/.local/bin/wiki-export-github-pages.sh` - Export to GitHub Pages
+  - **Quick Commands**:
+    - `docker compose -f ~/wiki/docker-compose.yml ps` - Check status
+    - `~/.local/bin/wiki-aggregator.sh` - Manual sync
+    - `systemctl --user list-timers | grep wiki` - Check timers
+
+## Claude Code Slash Commands (2025-12-15)
+
+Custom slash commands in `~/.claude/commands/` for orchestration workflow:
+
+| Command | Description |
+|---------|-------------|
+| `/quick-budget` | Fast budget and compliance check |
+| `/delegate <task>` | Direct delegation shortcut to OpenCode |
+| `/search-first <query>` | Search existing code before writing new |
+| `/new-feature <desc>` | Start feature with full orchestration workflow |
+| `/session-end` | End-of-session cleanup and reporting |
+
+**Usage**: Type the command in Claude Code (e.g., `/quick-budget`)
+
+## Claude Code Subagents (2025-12-15)
+
+Specialized subagents in `~/.claude/agents/` for orchestration-handled tasks:
+
+| Subagent | Description | Tools |
+|----------|-------------|-------|
+| `requirements-analyst` | Clarify requirements, define acceptance criteria | Read, Grep, Glob, WebFetch |
+| `architect` | Design solutions, document ADRs | Read, Grep, Glob |
+| `code-reviewer` | Review code for quality, security, performance | Read, Grep, Glob |
+| `orchestration-helper` | Meta-agent for complex delegation decisions | Read, Grep, Glob, WebFetch |
+
+**Usage**: Use via Task tool with `subagent_type` parameter or mentioned in commands.
+
+**Auto-Review**: The `auto-review-trigger.sh` hook automatically suggests code review after opencode delegation completes.
+
+## Custom Commands Reference
+
+**Quick Reference**: `cmds` - List all 54 custom scripts with descriptions
+- `cmds` - Show all categorized commands
+- `cmds claude` - Claude Code tools only
+- `cmds network` - Network tools only
+- `cmds <search>` - Search by keyword
+
+**Categories**:
+| Category | Key Commands |
+|----------|--------------|
+| **Claude** | `claude-conversation-logger.sh --today`, `claude-monitor --plan max5` |
+| **Network** | `network-toolkit.sh`, `network-watchdog.sh`, `network-diagnostics.sh` |
+| **AdGuard** | `adguard-api.sh test`, `adguard-blocklist-manager.sh` |
+| **Gaming** | `steam-nvidia.sh`, `gaming-performance.sh`, `optimize-gaming.sh status` |
+| **Security** | `security-dashboard.sh`, `clamav-daily-scan.sh` |
+| **System** | `battery-monitor.sh check`, `memory-pressure-monitor.sh` |
+
+**Service Management**: `vision`, `remote-access`
+**AI Tools**: `gemini "query"`, `opencode`, `pt`, `pt-ai`
+**Project Tracker**: `pt list`, `pt status <project>`, `pt add <project> <task>`
+
+See `~/Development/claude-context/CLAUDE-ARCHIVE.md` for detailed tool documentation.
+
+## OpenCode Wrappers
+
+### opencode-konsole (2025-12)
+
+Wrapper script at `/home/vzith/.local/bin/opencode-konsole` for Konsole terminal integration.
+
+**Features**:
+- Auto-detects Konsole environment via `KONSOLE_VERSION` variable
+- In Konsole: runs directly with `TERM=konsole-256color` optimization
+- Outside Konsole: launches new Konsole window
+- Passes all arguments to opencode
+- Executable permissions set
+
+**Usage**: `opencode-konsole [arguments]`
+
+**Benefits**:
+- Native Konsole integration
+- Optimal color rendering (konsole-256color TERM)
+- Smart execution mode (inline vs new window)
+- Consistent with opencode-alacritty and opencode-kitty patterns
+
+## Communication Style
+
+**Core Principle**: Technical accuracy over validation. Direct, factual communication.
+
+**Prohibited**:
+- Validation: "You're absolutely right", "Great question", "Perfect"
+- Marketing: "powerful", "robust", "seamless", "amazing", "cutting-edge"
+- Softening: "You might want to consider", "Perhaps try"
+
+**Required**:
+- Direct corrections: "This is incorrect. [explanation]"
+- Factual responses: State fact → Explain mechanism → Provide context → Give examples
+- Disagree immediately: "No. [correct information]"
+
+**Tone**: Factual over friendly, direct over diplomatic, technical over conversational, detailed over concise.
+
+## MCP Configuration
+
+**lazy-mcp** (MCP proxy with on-demand loading):
+- Single MCP endpoint for all tools
+- Config: `~/.claude/lazy-mcp-config.json`
+- Hierarchy: `~/.claude/mcp_hierarchy/`
+- Binary: `~/Development/lazy-mcp/build/mcp-proxy`
+
+**Managed MCPs via lazy-mcp**:
+- **claude-context** (semantic code search):
+  - Provider: Gemini `text-embedding-004`
+  - Vector DB: Zilliz Cloud (managed Milvus)
+  - Tools: `index_codebase`, `search_code`, `clear_index`, `get_indexing_status`
+- **claude-orchestrator** (delegation policy):
+  - Tools: `check_delegation_policy`, `delegate_task`, `get_session_stats`, `session_init`
+
+**Global env**: `~/.context/.env`
+
+## Network Infrastructure
+
+**Tailscale Network**: VZNcommunity tailnet
+**This Machine**: 100.98.180.32 (archlinux)
+**Raspberry Pi**: 100.78.187.47 (raspberrypi-server, exit node)
+**AdGuard Home**: 100.69.133.11 (on Pi via Docker/Tailscale)
+**Current DNS**: Quad9 (9.9.9.9), Cloudflare (1.1.1.1) - Pi offline
+**When Pi online**: Switch DNS to 100.69.133.11 for ad-blocking
+
+See `TAILSCALE-EXIT-NODE-SETUP.md` for full network configuration.
+
+## System Services
+
+- **Docker** (2025-09): v28.4.0 (auto-start, user in docker group)
+- **Steam** (2025-10): v1.0.0.84-1 (use `prime-run` for NVIDIA offload)
+- **GPU Configuration** (2025-12-14):
+  - **AMD Radeon 680M** (iGPU): Primary display output, all monitors route through this
+  - **NVIDIA RTX 4060 Mobile** (dGPU): Render offload only via `prime-run`
+  - **⚠️ DO NOT** set NVIDIA as primary X display (`PrimaryGPU "yes"`) - causes black screen
+  - **Disabled config**: `/etc/X11/xorg.conf.d/10-nvidia-primary.conf.disabled`
+  - **Gaming**: Use `prime-run %command%` in Steam launch options
+- **Memory Protection** (2025-11): PSI monitor + systemd-oomd + 20GB swap (operational)
+- **Auto Updates** (2025-11): Daily 3:00 AM (pacman -Syu, excludes AUR/kernel/nvidia)
+- **OpenCode LFM2** (2025-12): Auto-start/stop (15min idle timeout, saves 5.5GB VRAM)
+- **NVIDIA Suspend/Resume Fix** (2025-12-10 21:30):
+  - **Issue**: Desktop lockout on wake (KWin Wayland framebuffer failure)
+  - **Config**: `/etc/modprobe.d/99-nvidia-wayland-resume.conf`
+    - `NVreg_PreserveVideoMemoryAllocations=1` - Preserves VRAM across suspend
+  - **Initramfs**: NVIDIA modules in `/etc/mkinitcpio.conf` MODULES array
+  - **Services**: `nvidia-suspend`, `nvidia-resume`, `nvidia-powerd` enabled
+  - **TTY Fallback**: Ctrl+Alt+F3 (F2 often occupied by greeter)
+- **DRM/GPU Permissions Fix** (2025-12-17):
+  - **Issue**: Watchdog reset on resume - KWin failed with "Atomic modeset test failed! Permission denied"
+  - **Root Cause**: User not in `video` group, causing DRM access failure during resume race condition
+  - **Fix**: `sudo usermod -aG video,i2c vzith`
+  - **Groups Required**:
+    - `video` (985): DRM device access (`/dev/dri/card*`) - **critical for Wayland**
+    - `i2c` (957): DDC-CI external monitor brightness control (optional)
+  - **Verify**: `id vzith | grep -E 'video|i2c'`
+  - **Note**: Logout/login required after group change
+- **Network Watchdog** (2025-12-10): Auto-recovery for connectivity issues
+  - **Timer**: `~/.config/systemd/user/network-watchdog.timer` (every 30 sec)
+  - **Script**: `~/.local/bin/network-watchdog.sh`
+  - **Logs**: `~/.local/share/network-watchdog/watchdog.log`
+  - **Features**:
+    - Immediate action on first failure (no wait for consecutive failures)
+    - Direct NetworkManager restart (skips DNS flush/connection restart)
+    - Desktop notifications: "🔄 Network Down" → "✅ Network Restored" or "❌ Recovery Failed"
+    - 1-minute cooldown between recovery cycles
+  - **Boot-time**: Enabled via `loginctl enable-linger vzith`
+  - **NM Config**: `/etc/NetworkManager/conf.d/99-autoconnect.conf` (infinite retries)
+  - **Polkit**: `/etc/polkit-1/rules.d/50-network-watchdog.rules` (passwordless NM restart)
+  - **Commands**:
+    - `systemctl --user status network-watchdog.timer` - Check status
+    - `cat ~/.local/share/network-watchdog/watchdog.log` - View logs
+    - `systemctl --user start network-watchdog.service` - Manual trigger
+- **System Status Hourly** (2025-12-10): Consolidated system health notifications
+  - **Timer**: `~/.config/systemd/user/system-status-hourly.timer` (every 1 hour)
+  - **Script**: `~/.local/bin/system-status-hourly.sh`
+  - **Features**:
+    - Hourly "✅ System Status" notification
+    - Shows: network status, memory/swap usage, disk usage, uptime
+    - First notification 5 min after boot
+  - **Commands**:
+    - `systemctl --user status system-status-hourly.timer` - Check status
+    - `~/.local/bin/system-status-hourly.sh` - Manual status check
+- **NetworkManager Resume Fix** (2025-12-10 21:30):
+  - **Issue**: Network not autoconnecting after suspend/wake
+  - **Service**: `/etc/systemd/system/nm-resume-fix.service`
+  - **Action**: Cycles NetworkManager off/on after wake
+  - **Priorities**: Wired=100, WiFi=50 (via `nmcli connection modify`)
+- **USB-C Multi-Monitor DisplayPort Alt Mode Fix** (2025-12-26):
+  - **Issue**: USB-C dual HDMI hub not detecting monitors, stuck in Billboard mode
+  - **Root Cause**: UCSI firmware error 256 after extended power-off, preventing DisplayPort Alt Mode registration
+  - **Error**: `ucsi_acpi USBC000:00: unknown error 256` / `failed to register partner alt modes (-5)`
+  - **Symptoms**:
+    - Hub shows as Billboard device (fallback mode)
+    - No displays detected on any DP ports
+    - All EDID data empty (0 bytes)
+    - Type-C Alt Mode shows "active" but no partner device
+  - **Fix**: Complete power cycle to reset USB-C controller firmware:
+    1. Shut down laptop completely (not reboot)
+    2. Unplug AC adapter
+    3. Hold power button for 30 seconds (drains residual power)
+    4. Wait 1 minute
+    5. Plug in AC adapter and power on
+  - **Why reboot doesn't work**: Regular reboot keeps power to USB-C controller, firmware state persists
+  - **Verification**:
+    - Check for UCSI errors: `sudo dmesg | grep -i ucsi`
+    - Check DP status: `for f in /sys/class/drm/card2-DP-*/status; do echo "$f: $(cat $f)"; done`
+    - Working setup shows DP-6 and DP-7 connected (MST hub assigns virtual ports)
+  - **Multi-Monitor Setup**:
+    - **Laptop**: AMD Radeon 680M (iGPU) handles all display outputs
+    - **USB-C Hub**: Uses DisplayPort MST (Multi-Stream Transport) for dual HDMI
+    - **Expected**: DP-6 and DP-7 (not DP-1) when MST hub is working
+  - **Note**: Triggered by extended power-off (e.g., unplugged during travel), UCSI firmware gets stuck
+- **Suspend/Resume Monitoring** (2025-12-26):
+  - **Tool**: `~/.local/bin/suspend-health-monitor.sh`
+  - **Purpose**: Detect and track suspend failures, firmware corruption, and USB-C issues
+  - **Commands**:
+    - `suspend-health-monitor.sh report` - Full health report with statistics
+    - `suspend-health-monitor.sh check` - Quick health check
+    - `suspend-health-monitor.sh watch` - Continuous monitoring (5min interval)
+  - **Monitors**:
+    - Incomplete suspend/resume cycles (system stuck in suspend)
+    - UCSI firmware errors (USB-C controller issues)
+    - Billboard mode detection (USB-C Alt Mode failures)
+    - 7-day success rate tracking
+  - **Alerts**: Desktop notification after 2+ failures
+  - **Logs**: `~/.local/share/suspend-monitor/health.log`
+  - **Stats**: `~/.local/share/suspend-monitor/state.json`
+  - **Event Tracking** (Dec 26, 2025):
+    - **Incident**: Suspend stuck at s2idle entry after extended power-off (Dec 24-26 travel)
+    - **Mechanism**: System froze after "Filesystems sync", no device suspend progress
+    - **Trigger**: Extended power-off → firmware state corruption (UCSI + suspend/resume firmware)
+    - **Fix**: Complete power cycle (shutdown + AC unplug + 30s power button + 1min wait)
+    - **Frequency**: 2 failures in 25 attempts (92% success rate) - isolated event, not chronic
+    - **Recurrence risk**: Low - only after extended power-off with firmware state corruption
+    - **Prediction**: Monitor UCSI errors and Billboard mode after long power-off periods
+    - **Detection**: Script detects incomplete suspend cycles and firmware corruption indicators
+
+## Working in This Environment
+
+1. Navigate to project directory
+2. Check for project-specific CLAUDE.md
+3. Use project's package manager (pnpm, pip, npm)
+4. Always search MCP before acting
+
+## Home Directory Organization (2025-12-19)
+
+Home directory is organized with minimal loose files for improved navigation and maintenance.
+
+### Primary Directories
+
+**Active Work**:
+- `~/Development/` - Active development projects (39 projects)
+- `~/Projects/` - Additional projects (bookstack, git-worktree-trial, PDX, tailscale-adguard)
+- `~/CAD_Projects/` - FreeCAD and CAD work
+- `~/selfhosted-services/` - Docker compose stacks (n8n, etc.)
+
+**Documentation**:
+- `~/Documents/guides/` - Organized documentation by category
+  - `system/` - Battery, boot, KDE, memory, security, troubleshooting (7 files)
+  - `network/` - DNS privacy, AdGuard configuration (2 files)
+  - `gaming/` - Steam, EU5 bug reports, mod files (8 files)
+  - `development/` - FreeCAD, LFM2, architecture, deployment standards (11 files)
+- `~/Documents/` - General documents
+
+**Scripts & Tools**:
+- `~/scripts/` - Consolidated scripts (10+ shell/python scripts)
+- `~/.local/bin/` - Installed binaries and tools
+
+**Archive**:
+- `~/archive/` - Session logs, old transcripts, backups, deprecated files (5000+ files)
+
+**Media**:
+- `~/Downloads/` - Temporary downloads
+- `~/Pictures/`, `~/Videos/`, `~/Music/` - Media files
+- `~/Desktop/`, `~/Templates/`, `~/Public/` - Standard XDG directories
+
+**Gaming**:
+- `~/SteamLibrary/` - Steam game library
+
+**Wiki**:
+- `~/wiki/` - Wiki.js Docker stack
+- `~/wiki-content/` - Wiki git repository
+
+### Root-Level Files (Keep Minimal)
+
+Only 3 essential files in home directory root:
+- `CLAUDE.md` - Main Claude Code instructions (this file)
+- `TAILSCALE-EXIT-NODE-SETUP.md` - Network configuration (referenced in CLAUDE.md)
+- `VAULT-SECRETS.md` - Secure credentials reference
+
+All other documentation moved to `~/Documents/guides/`, scripts to `~/scripts/`, and old files to `~/archive/`.
+
+## File Locations
+
+- **Development**: `~/Development/`
+- **Projects**: `~/Projects/`
+- **Documentation**: `~/Documents/guides/{system,network,gaming,development}/`
+- **Scripts**: `~/scripts/`, `~/.local/bin/`
+- **Archive**: `~/archive/`, `~/Development/claude-context/CLAUDE-ARCHIVE.md`
+- **Config**: `~/.config/`, `~/.claude.json`
+- **OpenCode**: `~/.config/opencode/opencode.json`
+- **MCP env**: `~/.context/.env`, `~/.docker/mcp/secrets.env`
+- **Vision Launcher**: `~/Development/vision-launcher/`
+- **LFM2 Server**: `~/Development/lfm2-vllm/`
+- **Memory Monitor**: `~/.local/share/memory-monitor/pressure.log`
+- **Network Tools**: `~/.local/bin/network-*.sh`
+
+## Operational Guidelines
+
+- **Auto-confirm**: `printf "Y\n" |` for package installs
+- **No interactive prompts**: Streamline all operations
+- **MCP first**: Always search before implementation
+- **Delegate**: Use OpenCode for boilerplate, docs, tests
+- **Git**: Claude Code handles commits, coordination only
