@@ -1,6 +1,6 @@
 [Unit]
 Description=Validate and backup Claude Code state files
-Documentation=file:///home/vzith/.local/bin/claude-state-validator.sh
+Documentation=man:claude-state-validator(1)
 After=network.target
 
 [Service]

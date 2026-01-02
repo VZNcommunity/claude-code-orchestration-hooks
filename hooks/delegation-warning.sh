@@ -1,6 +1,6 @@
 #!/bin/bash
 # PostToolUse Hook: Delegation Policy Awareness
-# Location: /home/vzith/.local/bin/delegation-warning.sh
+# Location: $HOME/.local/bin/delegation-warning.sh
 # Purpose: Notify after code generation to build awareness
 
 set -euo pipefail

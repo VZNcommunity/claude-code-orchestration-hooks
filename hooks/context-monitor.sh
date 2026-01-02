@@ -1,6 +1,6 @@
 #!/bin/bash
 # PreToolUse Hook: Context Window Management
-# Location: /home/vzith/.local/bin/context-monitor.sh
+# Location: $HOME/.local/bin/context-monitor.sh
 # Purpose: Proactive context size monitoring and compaction warnings
 
 set -euo pipefail

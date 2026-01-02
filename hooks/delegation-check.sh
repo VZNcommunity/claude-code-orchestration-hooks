@@ -1,6 +1,6 @@
 #!/bin/bash
 # PreToolUse Hook: Orchestration + Context-Aware Delegation
-# Location: /home/vzith/.local/bin/delegation-check.sh
+# Location: $HOME/.local/bin/delegation-check.sh
 # Purpose: Enforce search-first + delegation workflow for code generation
 
 set -euo pipefail
@@ -67,7 +67,7 @@ RECOMMENDED WORKFLOW (Search-First + Delegate):
 
 1. 🔍 SEARCH EXISTING PATTERNS
    mcp__claude-context__search_code({
-     path: '/home/vzith/Development',
+     path: '$HOME/Development',
      query: '$TASK_DESC patterns examples'
    })
    → Finds existing implementations to learn from

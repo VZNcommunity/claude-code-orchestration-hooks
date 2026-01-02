@@ -1,6 +1,6 @@
 #!/bin/bash
 # PostToolUse Hook: Large Output Detection & Delegation
-# Location: /home/vzith/.local/bin/output-monitor.sh
+# Location: $HOME/.local/bin/output-monitor.sh
 # Purpose: Detect large tool outputs and suggest summarization via delegation
 
 set -euo pipefail
