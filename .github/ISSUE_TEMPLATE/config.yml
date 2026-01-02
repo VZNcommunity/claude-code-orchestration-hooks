@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation
+    url: https://github.com/VZNcommunity/claude-code-orchestration-hooks/blob/master/README.md
+    about: Check the README for installation and usage instructions
+  - name: Contributing Guidelines
+    url: https://github.com/VZNcommunity/claude-code-orchestration-hooks/blob/master/CONTRIBUTING.md
+    about: Learn how to contribute to this project
