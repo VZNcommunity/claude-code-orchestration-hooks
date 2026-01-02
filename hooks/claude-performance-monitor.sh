@@ -131,7 +131,7 @@ EOF
         echo "" >> "$report_file"
         echo "Consider optimizing these hooks or increasing threshold." >> "$report_file"
     else
-        echo "✓ All hooks performing within threshold (${SLOW_THRESHOLD_MS}ms)" >> "$report_file"
+        echo "All hooks performing within threshold (${SLOW_THRESHOLD_MS}ms)" >> "$report_file"
     fi
 
     # Update shared state

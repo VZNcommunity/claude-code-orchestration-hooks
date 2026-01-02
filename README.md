@@ -1,8 +1,10 @@
 # Claude Code Orchestration Hooks
 
-**Version:** 1.1.0
-**License:** MIT
-**Status:** Public Release
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/VZNcommunity/claude-code-orchestration-hooks/releases/tag/v1.1.0)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Validate](https://github.com/VZNcommunity/claude-code-orchestration-hooks/actions/workflows/validate.yml/badge.svg)](https://github.com/VZNcommunity/claude-code-orchestration-hooks/actions/workflows/validate.yml)
+[![Shell](https://img.shields.io/badge/shell-bash%205.0%2B-orange.svg)](https://www.gnu.org/software/bash/)
+[![Issues](https://img.shields.io/github/issues/VZNcommunity/claude-code-orchestration-hooks.svg)](https://github.com/VZNcommunity/claude-code-orchestration-hooks/issues)
 
 Self-driving orchestration system for Claude Code with automated delegation enforcement, context monitoring, and budget optimization.
 

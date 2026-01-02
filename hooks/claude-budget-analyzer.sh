@@ -227,15 +227,15 @@ generate_report() {
     # Recommendations
     echo "Recommendations:"
     if (( $(echo "$avg_delegation < 20" | bc -l 2>/dev/null || echo 0) )); then
-        echo "  ⚠️ Low delegation rate - consider using OpenCode more frequently"
+        echo "  Low delegation rate - consider using OpenCode more frequently"
         echo "  💡 Search existing patterns before generating code"
         echo "  🤖 Delegate boilerplate and test generation"
     elif (( $(echo "$avg_delegation >= 50" | bc -l 2>/dev/null || echo 0) )); then
-        echo "  ✅ Excellent delegation rate - budgets optimized"
+        echo "  Excellent delegation rate - budgets optimized"
         echo "  💰 High ROI on token usage"
     else
         echo "  ℹ️ Moderate delegation rate - room for improvement"
-        echo "  📊 Monitor context usage during sessions"
+        echo "  Monitor context usage during sessions"
     fi
 }
 

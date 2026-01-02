@@ -11,7 +11,7 @@ echo "Uninstallation Script v1.1.0"
 echo "===================================="
 echo ""
 
-echo "⚠️  WARNING: This will remove all Claude orchestration hooks and timers."
+echo "WARNING: This will remove all Claude orchestration hooks and timers."
 echo "Continue with uninstallation? (y/n)"
 read -r confirm
 if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
@@ -35,7 +35,7 @@ systemctl --user disable claude-hooks-updater.timer 2>/dev/null || true
 systemctl --user disable claude-state-validator.timer 2>/dev/null || true
 systemctl --user disable claude-budget-analyzer.timer 2>/dev/null || true
 systemctl --user disable claude-performance-monitor.timer 2>/dev/null || true
-echo "✅ Timers stopped and disabled"
+echo "Timers stopped and disabled"
 echo ""
 
 # Remove systemd units
@@ -43,7 +43,7 @@ echo "[2/5] Removing systemd units..."
 rm -f "$HOME/.config/systemd/user/claude-"*.timer
 rm -f "$HOME/.config/systemd/user/claude-"*.service
 systemctl --user daemon-reload
-echo "✅ Systemd units removed"
+echo "Systemd units removed"
 echo ""
 
 # Remove hook scripts
@@ -59,7 +59,7 @@ rm -f "$HOME/.local/bin/delegation-check.sh"
 rm -f "$HOME/.local/bin/delegation-warning.sh"
 rm -f "$HOME/.local/bin/output-monitor.sh"
 rm -f "$HOME/.local/bin/auto-review-trigger.sh"
-echo "✅ Hook scripts removed"
+echo "Hook scripts removed"
 echo ""
 
 # Handle state directory
@@ -69,7 +69,7 @@ if [ -d "$HOME/.context" ]; then
     read -r remove_state
     if [[ "$remove_state" =~ ^[Yy]$ ]]; then
         rm -rf "$HOME/.context"
-        echo "✅ State directory removed"
+        echo "State directory removed"
     else
         echo "ℹ️  State directory kept"
     fi
@@ -86,7 +86,7 @@ if [ -f "$HOME/.claude/settings.json.backup."* ]; then
     if [[ "$restore_settings" =~ ^[Yy]$ ]]; then
         latest_backup=$(ls -t "$HOME/.claude/settings.json.backup."* | head -1)
         cp "$latest_backup" "$HOME/.claude/settings.json"
-        echo "✅ Settings restored from: $(basename "$latest_backup")"
+        echo "Settings restored from: $(basename "$latest_backup")"
     else
         echo "ℹ️  Settings not restored. You may want to manually edit ~/.claude/settings.json"
     fi

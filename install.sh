@@ -16,25 +16,25 @@ echo "[1/7] Checking system requirements..."
 
 # Check bash version
 if ! bash --version | grep -q "version [5-9]"; then
-    echo "❌ Error: Bash 5+ required"
+    echo "Error: Bash 5+ required"
     exit 1
 fi
 
 # Check jq
 if ! command -v jq &> /dev/null; then
-    echo "❌ Error: jq not installed. Install with: sudo pacman -S jq"
+    echo "Error: jq not installed. Install with: sudo pacman -S jq"
     exit 1
 fi
 
 # Check systemd
 if ! command -v systemctl &> /dev/null; then
-    echo "❌ Error: systemd not found. This tool requires systemd."
+    echo "Error: systemd not found. This tool requires systemd."
     exit 1
 fi
 
 # Check Claude Code (optional warning)
 if [ ! -f "$HOME/.claude/settings.json" ]; then
-    echo "⚠️  Warning: Claude Code settings not found at ~/.claude/settings.json"
+    echo "Warning: Claude Code settings not found at ~/.claude/settings.json"
     echo "   Continue anyway? (y/n)"
     read -r response
     if [[ ! "$response" =~ ^[Yy]$ ]]; then
@@ -42,7 +42,7 @@ if [ ! -f "$HOME/.claude/settings.json" ]; then
     fi
 fi
 
-echo "✅ All requirements met"
+echo "All requirements met"
 echo ""
 
 # Create directories
@@ -50,21 +50,21 @@ echo "[2/7] Creating directories..."
 mkdir -p "$HOME/.local/bin"
 mkdir -p "$HOME/.config/systemd/user"
 mkdir -p "$HOME/.context"
-echo "✅ Directories created"
+echo "Directories created"
 echo ""
 
 # Install hook scripts
 echo "[3/7] Installing hook scripts..."
 cp -v hooks/*.sh "$HOME/.local/bin/"
 chmod 755 "$HOME/.local/bin"/*.sh
-echo "✅ Hook scripts installed to ~/.local/bin/"
+echo "Hook scripts installed to ~/.local/bin/"
 echo ""
 
 # Install systemd units
 echo "[4/7] Installing systemd units..."
 cp -v systemd/*.{timer,service} "$HOME/.config/systemd/user/" 2>/dev/null || true
 systemctl --user daemon-reload
-echo "✅ Systemd units installed"
+echo "Systemd units installed"
 echo ""
 
 # Configure Claude Code settings
@@ -75,7 +75,7 @@ if [ -f "$HOME/.claude/settings.json" ]; then
     read -r backup_response
     if [[ "$backup_response" =~ ^[Yy]$ ]]; then
         cp "$HOME/.claude/settings.json" "$HOME/.claude/settings.json.backup.$(date +%Y%m%d-%H%M%S)"
-        echo "✅ Backup created"
+        echo "Backup created"
     fi
 
     echo ""
@@ -87,13 +87,13 @@ if [ -f "$HOME/.claude/settings.json" ]; then
 
     if [ "$config_choice" = "1" ]; then
         cp settings.minimal.json "$HOME/.claude/settings.json"
-        echo "✅ Minimal hooks configuration applied"
+        echo "Minimal hooks configuration applied"
     else
         echo "ℹ️  Keeping existing settings"
     fi
 else
     cp settings.minimal.json "$HOME/.claude/settings.json"
-    echo "✅ Minimal hooks configuration installed"
+    echo "Minimal hooks configuration installed"
 fi
 echo ""
 
@@ -108,7 +108,7 @@ if [[ "$enable_response" =~ ^[Yy]$ ]]; then
     systemctl --user enable --now claude-state-validator.timer
     systemctl --user enable --now claude-budget-analyzer.timer
     systemctl --user enable --now claude-performance-monitor.timer
-    echo "✅ All timers enabled and started"
+    echo "All timers enabled and started"
 else
     echo "ℹ️  Timers not enabled. Enable manually with:"
     echo "   systemctl --user enable --now claude-<timer-name>.timer"

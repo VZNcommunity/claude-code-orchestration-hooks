@@ -250,7 +250,7 @@ verify_installation() {
     done <<< "$(jq -r '.hooks | keys[]' "$MANIFEST_FILE")"
 
     if [ ${#failed_hooks[@]} -eq 0 ]; then
-        log "✓ All hooks verified successfully"
+        log "All hooks verified successfully"
         return 0
     else
         log "✗ Verification failed for: ${failed_hooks[*]}"

@@ -34,7 +34,7 @@ if [[ "$TOOL_NAME" =~ ^(Write|Edit)$ ]] && [ -n "$FILE_PATH" ]; then
     log "Code generation detected in: $FILE_PATH"
 
     echo "" >&2
-    echo "⚠️ [Orchestration Policy] Code generation detected in $FILE_PATH" >&2
+    echo "[Orchestration Policy] Code generation detected in $FILE_PATH" >&2
     echo "" >&2
     echo "   💡 OPTIMIZATION OPPORTUNITIES:" >&2
     echo "      1. Search existing patterns: mcp__claude-context__search_code" >&2

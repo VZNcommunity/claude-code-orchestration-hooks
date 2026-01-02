@@ -40,7 +40,7 @@ if (( $(echo "$CONTEXT_USAGE >= 75" | bc -l 2>/dev/null || echo 0) )); then
   "hookSpecificOutput": {
     "hookEventName": "PreToolUse",
     "permissionDecision": "ask",
-    "permissionDecisionReason": "⚠️ CRITICAL CONTEXT USAGE\\n\\nCurrent: ${CONTEXT_SIZE} tokens (${CONTEXT_USAGE}%)\\nLimit: ${CONTEXT_LIMIT} tokens\\nRemaining: ${REMAINING} tokens\\n\\nRECOMMENDED ACTIONS:\\n1. Compact conversation: /compact\\n2. Increase delegation rate (current: ${DELEGATION_RATE}%)\\n3. Clear unnecessary context\\n\\nProceeding may risk context limit errors.\\n\\nContinue anyway?"
+    "permissionDecisionReason": "CRITICAL CONTEXT USAGE\\n\\nCurrent: ${CONTEXT_SIZE} tokens (${CONTEXT_USAGE}%)\\nLimit: ${CONTEXT_LIMIT} tokens\\nRemaining: ${REMAINING} tokens\\n\\nRECOMMENDED ACTIONS:\\n1. Compact conversation: /compact\\n2. Increase delegation rate (current: ${DELEGATION_RATE}%)\\n3. Clear unnecessary context\\n\\nProceeding may risk context limit errors.\\n\\nContinue anyway?"
   }
 }
 EOF

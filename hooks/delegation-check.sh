@@ -56,7 +56,7 @@ if [ "$TOOL_NAME" = "Write" ] || [ "$TOOL_NAME" = "Edit" ]; then
     TASK_DESC="implement $(basename "$FILE_PATH" | sed 's/\.[^.]*$//' | tr '_-' ' ')"
 
     # Build context-aware guidance
-    GUIDANCE="⚠️ CODE GENERATION DETECTED
+    GUIDANCE="CODE GENERATION DETECTED
 
 File: $FILE_PATH
 Task: $TASK_DESC
@@ -74,7 +74,7 @@ RECOMMENDED WORKFLOW (Search-First + Delegate):
    → Ensures consistency with codebase
    → Provides context to OpenCode
 
-2. 📊 CHECK DELEGATION POLICY
+2. CHECK DELEGATION POLICY
    mcp__claude-orchestrator__check_delegation_policy({
      task_type: 'code_generation',
      description: '$TASK_DESC'
@@ -93,23 +93,23 @@ RECOMMENDED WORKFLOW (Search-First + Delegate):
    → Reduces context window pressure
 
 BENEFITS:
-✅ Consistent with existing code
-✅ 2-4x token efficiency via delegation
-✅ Reduces context debt
-✅ Improves compliance score"
+Consistent with existing code
+2-4x token efficiency via delegation
+Reduces context debt
+Improves compliance score"
 
     # Add context warnings if needed
     if (( $(echo "$CONTEXT_USAGE >= 75" | bc -l 2>/dev/null || echo 0) )); then
       GUIDANCE="$GUIDANCE
 
-⚠️ HIGH CONTEXT USAGE (${CONTEXT_USAGE}%)
+HIGH CONTEXT USAGE (${CONTEXT_USAGE}%)
 Recommend: /compact before proceeding"
     fi
 
     if (( CONTEXT_DEBT > 10000 )); then
       GUIDANCE="$GUIDANCE
 
-⚠️ HIGH CONTEXT DEBT (${CONTEXT_DEBT} tokens)
+HIGH CONTEXT DEBT (${CONTEXT_DEBT} tokens)
 Consider: Delegate recent large operations to reduce debt"
     fi
 

@@ -27,7 +27,7 @@ if [[ "$TOOL_NAME" =~ ^(Grep|Glob|Read|Bash)$ ]]; then
     ESTIMATED_TOKENS=$((OUTPUT_SIZE / 4))
 
     echo "" >&2
-    echo "⚠️ [Context Debt] Large output from $TOOL_NAME:" >&2
+    echo "[Context Debt] Large output from $TOOL_NAME:" >&2
     echo "   Size: ${OUTPUT_SIZE} chars (~${ESTIMATED_TOKENS} tokens)" >&2
     echo "" >&2
     echo "   💡 OPTIMIZATION: Delegate analysis to reduce context:" >&2
