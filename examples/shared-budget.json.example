@@ -1,0 +1,29 @@
+{
+  "session_tokens": 0,
+  "session_budget": 10000,
+  "daily_tokens": 0,
+  "daily_budget": 50000,
+  "daily_reset_timestamp": "2025-01-01T00:00:00Z",
+  "session_start_timestamp": "2025-01-01T12:00:00Z",
+  "delegation_count": 0,
+  "direct_generation_count": 0,
+  "context_tracking": {
+    "context_usage_percent": 0,
+    "context_debt": 0,
+    "last_check_timestamp": "2025-01-01T12:00:00Z"
+  },
+  "budget_history": {
+    "total_sessions": 0,
+    "total_delegations": 0,
+    "total_tokens_saved": 0,
+    "avg_delegation_rate": 0
+  },
+  "notifications": {
+    "session_50_percent": false,
+    "session_75_percent": false,
+    "session_90_percent": false,
+    "daily_50_percent": false,
+    "daily_75_percent": false,
+    "daily_90_percent": false
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "cache": {
+    "example_search_query_hash": {
+      "query": "example search query",
+      "path": "/example/path",
+      "results": [
+        {
+          "file": "/example/path/file1.ts",
+          "score": 0.95,
+          "snippet": "Example code snippet from search results"
+        },
+        {
+          "file": "/example/path/file2.ts",
+          "score": 0.87,
+          "snippet": "Another example snippet"
+        }
+      ],
+      "timestamp": "2025-01-01T12:00:00Z",
+      "ttl_seconds": 3600
+    }
+  },
+  "stats": {
+    "total_searches": 0,
+    "cache_hits": 0,
+    "cache_misses": 0,
+    "hit_rate": 0,
+    "tokens_saved": 0,
+    "last_cleanup": "2025-01-01T12:00:00Z"
+  },
+  "config": {
+    "max_entries": 100,
+    "default_ttl_seconds": 3600,
+    "eviction_policy": "LRU"
+  }
+}
