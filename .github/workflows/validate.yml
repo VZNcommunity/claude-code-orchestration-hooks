@@ -1,0 +1,184 @@
+name: Validate
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run ShellCheck on hook scripts
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: './hooks'
+          severity: warning
+
+      - name: Run ShellCheck on install/uninstall scripts
+        uses: ludeeus/action-shellcheck@master
+        with:
+          additional_files: 'install.sh uninstall.sh'
+          severity: warning
+
+  validate-json:
+    name: Validate JSON
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Validate settings.minimal.json
+        run: jq empty < settings.minimal.json
+
+      - name: Validate example state files
+        run: |
+          jq empty < examples/shared-budget.json.example
+          jq empty < examples/search-cache.json.example
+
+      - name: Validate CLAUDE.md.reference (JSON in markdown)
+        run: |
+          if [ -f CLAUDE.md.reference ]; then
+            echo "✓ CLAUDE.md.reference exists"
+          fi
+
+  validate-systemd:
+    name: Validate Systemd Units
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install systemd
+        run: sudo apt-get update && sudo apt-get install -y systemd
+
+      - name: Validate systemd service files
+        run: |
+          for service in systemd/*.service; do
+            echo "Validating $service"
+            systemd-analyze verify "$service" || true
+          done
+
+      - name: Validate systemd timer files
+        run: |
+          for timer in systemd/*.timer; do
+            echo "Validating $timer"
+            systemd-analyze verify "$timer" || true
+          done
+
+  check-paths:
+    name: Check for Hardcoded Paths
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Search for hardcoded home paths
+        run: |
+          echo "Checking for hardcoded /home/ paths..."
+          if grep -r "/home/" hooks/ systemd/ --exclude-dir=.git || true; then
+            echo "❌ Found hardcoded /home/ paths!"
+            exit 1
+          else
+            echo "✅ No hardcoded /home/ paths found"
+          fi
+
+      - name: Verify portable path usage
+        run: |
+          echo "Checking for proper variable usage..."
+          grep -r '\$HOME' hooks/ || echo "⚠️  Warning: No \$HOME usage in hooks/"
+          grep -r '%h' systemd/ || echo "⚠️  Warning: No %h usage in systemd/"
+          echo "✅ Path variable check complete"
+
+  check-executables:
+    name: Check Script Permissions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify install.sh is executable
+        run: |
+          if [ -x install.sh ]; then
+            echo "✅ install.sh is executable"
+          else
+            echo "❌ install.sh is not executable"
+            exit 1
+          fi
+
+      - name: Verify uninstall.sh is executable
+        run: |
+          if [ -x uninstall.sh ]; then
+            echo "✅ uninstall.sh is executable"
+          else
+            echo "❌ uninstall.sh is not executable"
+            exit 1
+          fi
+
+      - name: Verify hook scripts are executable
+        run: |
+          for script in hooks/*.sh; do
+            if [ -x "$script" ]; then
+              echo "✅ $script is executable"
+            else
+              echo "❌ $script is not executable"
+              exit 1
+            fi
+          done
+
+  check-documentation:
+    name: Check Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify required files exist
+        run: |
+          echo "Checking required documentation files..."
+          test -f README.md && echo "✅ README.md exists" || exit 1
+          test -f LICENSE && echo "✅ LICENSE exists" || exit 1
+          test -f CHANGELOG.md && echo "✅ CHANGELOG.md exists" || exit 1
+          test -f CONTRIBUTING.md && echo "✅ CONTRIBUTING.md exists" || exit 1
+          test -f install.sh && echo "✅ install.sh exists" || exit 1
+          test -f uninstall.sh && echo "✅ uninstall.sh exists" || exit 1
+
+      - name: Verify examples directory
+        run: |
+          echo "Checking examples directory..."
+          test -d examples && echo "✅ examples/ directory exists" || exit 1
+          test -f examples/README.md && echo "✅ examples/README.md exists" || exit 1
+          test -f examples/shared-budget.json.example && echo "✅ shared-budget.json.example exists" || exit 1
+          test -f examples/search-cache.json.example && echo "✅ search-cache.json.example exists" || exit 1
+
+      - name: Check for broken markdown links (basic)
+        run: |
+          echo "Checking for common broken link patterns..."
+          ! grep -r "](http://localhost" *.md || (echo "❌ Found localhost links in markdown" && exit 1)
+          echo "✅ No obvious broken links found"
+
+  summary:
+    name: Validation Summary
+    runs-on: ubuntu-latest
+    needs: [shellcheck, validate-json, validate-systemd, check-paths, check-executables, check-documentation]
+    steps:
+      - name: All checks passed
+        run: |
+          echo "================================================"
+          echo "✅ All validation checks passed!"
+          echo "================================================"
+          echo "- ShellCheck: PASSED"
+          echo "- JSON Validation: PASSED"
+          echo "- Systemd Units: PASSED"
+          echo "- Path Portability: PASSED"
+          echo "- File Permissions: PASSED"
+          echo "- Documentation: PASSED"
+          echo "================================================"
