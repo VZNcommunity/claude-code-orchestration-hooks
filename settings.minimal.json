@@ -19,7 +19,7 @@
           {
             "type": "command",
             "comment": "Large output detection and context debt tracking",
-            "command": "/home/vzith/.local/bin/output-monitor.sh",
+            "command": "$HOME/.local/bin/output-monitor.sh",
             "timeout": 5,
             "suppressOutput": false
           }
@@ -31,7 +31,7 @@
           {
             "type": "command",
             "comment": "Auto-trigger code review after delegation (2025-12-15)",
-            "command": "/home/vzith/.local/bin/auto-review-trigger.sh",
+            "command": "$HOME/.local/bin/auto-review-trigger.sh",
             "timeout": 5,
             "suppressOutput": false
           }

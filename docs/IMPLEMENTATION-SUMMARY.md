@@ -129,21 +129,21 @@ Enhanced `~/.claude/settings.json` with hooks configuration:
     "PreToolUse": [
       {
         "matcher": "Write|Edit",
-        "hooks": [{"command": "/home/vzith/.local/bin/delegation-check.sh", "timeout": 10}]
+        "hooks": [{"command": "$HOME/.local/bin/delegation-check.sh", "timeout": 10}]
       },
       {
         "matcher": "*",
-        "hooks": [{"command": "/home/vzith/.local/bin/context-monitor.sh", "timeout": 5}]
+        "hooks": [{"command": "$HOME/.local/bin/context-monitor.sh", "timeout": 5}]
       }
     ],
     "PostToolUse": [
       {
         "matcher": "Write|Edit",
-        "hooks": [{"command": "/home/vzith/.local/bin/delegation-warning.sh", "timeout": 5}]
+        "hooks": [{"command": "$HOME/.local/bin/delegation-warning.sh", "timeout": 5}]
       },
       {
         "matcher": "Grep|Glob|Read|Bash",
-        "hooks": [{"command": "/home/vzith/.local/bin/output-monitor.sh", "timeout": 5}]
+        "hooks": [{"command": "$HOME/.local/bin/output-monitor.sh", "timeout": 5}]
       }
     ]
   }
