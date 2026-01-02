@@ -1,15 +1,14 @@
 # Claude Code Orchestration Hooks
 
 **Version:** 1.1.0
-**Status:** Private Development
-**Created:** 2025-11-23
+**License:** MIT
+**Status:** Public Release
 
 Self-driving orchestration system for Claude Code with automated delegation enforcement, context monitoring, and budget optimization.
 
 ## Overview
 
 This project implements a comprehensive automation layer for Claude Code that:
-- Enforces orchestration-first policy via PreToolUse/PostToolUse hooks
 - Monitors context window usage in real-time
 - Manages token budgets with adaptive optimization
 - Provides self-healing state file validation
@@ -17,27 +16,20 @@ This project implements a comprehensive automation layer for Claude Code that:
 - Caches search results with TTL expiration
 - Auto-updates with version control and rollback
 
-**Goal:** Reduce token usage by 50-75% through proactive delegation to OpenCode+LFM2 while maintaining code quality.
+**Goal:** Reduce token usage by 50-75% through proactive delegation while maintaining code quality.
 
-## Architecture
+## Features
 
-### Components
+### Active Hooks (Minimal Configuration)
 
-**Core Hooks (Session 1):**
-- `delegation-check.sh` - PreToolUse enforcement for Write|Edit
-- `delegation-warning.sh` - PostToolUse awareness notifications
-- `context-monitor.sh` - Real-time context window tracking
-- `output-monitor.sh` - Large output detection and debt tracking
+Since version 1.1.0, the system runs in minimal mode for better compatibility with Claude Code's auto-accept permissions:
 
-**Self-Driving Features (Session 2):**
-- `claude-state-validator.sh` - Daily state validation with auto-repair
-- `claude-performance-monitor.sh` - Hook execution time tracking
-- `claude-search-cache-manager.sh` - TTL-based search result caching
-- `claude-context-monitor.sh` - Every-2-minute context monitoring
-- `claude-budget-analyzer.sh` - Weekly budget optimization
-- `claude-hooks-updater.sh` - Version-controlled auto-updates
+- **output-monitor.sh** - Large output detection and context debt tracking
+- **auto-review-trigger.sh** - Code review suggestions after delegation
 
 ### Systemd Timers
+
+Automated background services for continuous monitoring:
 
 | Timer | Frequency | Purpose |
 |-------|-----------|---------|
@@ -48,152 +40,108 @@ This project implements a comprehensive automation layer for Claude Code that:
 | claude-budget-analyzer | Weekly Mon 9 AM | Budget optimization |
 | claude-performance-monitor | Weekly Sun 8 PM | Performance reports |
 
-## Configuration Modes (2025-12-31)
+## Prerequisites
 
-### Minimal Configuration (Current)
+### System Requirements
 
-**Status:** Active since 2025-12-31
+- **Operating System:** Arch Linux or systemd-based distribution
+- **Shell:** Bash 5.0+
+- **Tools:** jq (JSON processor)
+- **Claude Code:** Latest version with MCP support
+- **systemd:** For automated timer services
 
-Due to interference with Claude Code's auto-accept permissions for Edit/Write operations, the hooks system now runs in **minimal mode**.
+### Optional MCP Servers
 
-**Active Hooks:**
-- `output-monitor.sh` (PostToolUse: Grep|Glob|Read|Bash) - Large output detection and context debt tracking
-- `auto-review-trigger.sh` (PostToolUse: Bash) - Code review suggestions after delegation
+- **claude-orchestrator** (v0.2.0+) - Delegation policy enforcement
+- **claude-context** - Semantic code search via embeddings
 
-**Disabled Hooks:**
-- **All PreToolUse hooks:** progress-validator, context-monitor, loop-checkpoint
-  - These ran before every tool call and blocked Edit/Write auto-accept
-- **PostToolUse on Write|Edit:** delegation-warning, review-enforcer, auto-commit
-  - These interfered with automatic permission handling
-- **PostToolUse on "*":** consistency-tracker
-  - Universal matcher caused blocking on all operations
-- **PostToolUse on TodoWrite:** auto-commit
+## Installation
 
-**Systemd Timers:** Still active - these run independently and don't interfere with tool operations.
-
-**Configuration File:** `settings.minimal.json` (reference configuration)
-
-**Reason for Change:** PreToolUse and aggressive PostToolUse hooks were preventing Claude Code from automatically accepting Edit/Write operations that were explicitly allowed in permissions, requiring manual user approval for every file change.
-
-### Full Configuration (Archived)
-
-The original full configuration with all PreToolUse and PostToolUse hooks is documented in git history (commits before 2025-12-31). It can be restored if the auto-accept permission issues are resolved in future Claude Code versions.
-
-**Trade-offs:**
-- **Minimal mode:** Better user experience (no permission blocks), reduced enforcement
-- **Full mode:** Strong orchestration enforcement, but blocks auto-accept permissions
-
-## Installation Status
-
-**Current Deployment:** Fully operational on personal system
-- Installed: `~/.local/bin/` (hook scripts)
-- Systemd: `~/.config/systemd/user/` (timers + services)
-- State: `~/.context/` (shared-budget.json, logs, cache)
-- Config: `~/.claude/settings.json` (hooks enabled)
-
-**Files:**
-- 9 hook scripts (49.6KB total)
-- 12 systemd units (6 timers + 6 services)
-- 1 version manifest with SHA256 checksums
-- Multiple state/log files
-
-## Integration
-
-### MCP Servers
-- **claude-orchestrator** (v0.2.0) - Delegation policy and task execution
-- **claude-context** - Semantic code search via Gemini embeddings
-- **claude-monitor** (v3.1.0) - Real-time token usage tracking
-
-### External Services
-- Desktop notifications via `notify-send`
-- Systemd journal logging
-- Performance metrics collection
-
-## Current State
-
-**Configuration Mode:** Minimal (2025-12-31)
-**Active Hooks:** 2/9 (output-monitor, auto-review-trigger)
-**Timers Active:** 6/6
-**Hooks Verified:** 9/9 with checksums
-**Version:** 1.1.0
-**Last Update:** 2025-12-31
-**Last Validation:** 2025-11-23
-
-## Performance
-
-- Hook overhead: <200ms average
-- Memory: 30-50MB per service (enforced)
-- CPU: 5-10% quota per service
-- Token reduction: Target 50-75% via delegation
-
-## Documentation
-
-- **Implementation Summary:** `docs/IMPLEMENTATION-SUMMARY.md`
-- **Version Manifest:** `config/version-manifest.json`
-- **Systemd Units:** `systemd/*.{timer,service}`
-- **Hook Scripts:** `hooks/*.sh`
-
-## TODO: Public Release Preparation
-
-When ready to make this repository public, complete these tasks:
-
-- [ ] Replace hardcoded `/home/vzith` paths with `$HOME` variables
-- [ ] Create example state files (schemas only, not real data)
-- [ ] Add comprehensive installation script (`install.sh`)
-- [ ] Add uninstallation script (`uninstall.sh`)
-- [ ] Add MIT License
-- [ ] Create CONTRIBUTING.md
-- [ ] Add architecture diagrams
-- [ ] Create troubleshooting guide
-- [ ] Add installation requirements check
-- [ ] Test on clean system
-- [ ] Sanitize any personal information from logs/examples
-- [ ] Update README for general audience
-- [ ] Add GitHub workflows for validation
-- [ ] Create release tags
-
-## Development Notes
-
-**Session 1 (2025-11-23):**
-- Implemented core hooks system
-- Integrated claude-orchestrator and claude-context MCPs
-- Added context window monitoring
-- Created shared state management
-
-**Session 2 (2025-11-23):**
-- Implemented self-healing state validation
-- Added performance monitoring
-- Created search result caching
-- Implemented adaptive budget management
-- Added version-controlled auto-updates
-- Deployed all systemd timers
-
-**Session 3 (2025-12-31):**
-- Switched to minimal hooks configuration
-- Disabled PreToolUse hooks (blocking Edit/Write auto-accept)
-- Disabled aggressive PostToolUse hooks
-- Retained only non-blocking hooks (output-monitor, auto-review-trigger)
-- Documented configuration modes and trade-offs
-- Created `settings.minimal.json` reference configuration
-
-## Repository Structure
-
-```
-claude-code-orchestration-hooks/
-├── README.md                    # This file
-├── CHANGELOG.md                 # Version history
-├── hooks/                       # All hook scripts (9 files)
-├── systemd/                     # Systemd units (12 files)
-├── config/                      # Configuration files
-│   └── version-manifest.json    # Hook checksums
-└── docs/                        # Documentation
-    └── IMPLEMENTATION-SUMMARY.md
-```
-
-## Quick Commands
+### Quick Install
 
 ```bash
-# Verify all timers
+# Clone the repository
+git clone https://github.com/VZNcommunity/claude-code-orchestration-hooks.git
+cd claude-code-orchestration-hooks
+
+# Run installation script
+./install.sh
+```
+
+### What Gets Installed
+
+The installation script will:
+
+1. Check system requirements (Bash 5+, jq, systemd)
+2. Create necessary directories:
+   - `~/.local/bin/` - Hook scripts
+   - `~/.config/systemd/user/` - Systemd units
+   - `~/.context/` - State files
+3. Copy hook scripts with proper permissions
+4. Install systemd timers and services
+5. Optionally configure Claude Code settings
+6. Enable and start systemd timers
+
+### Manual Installation
+
+If you prefer manual installation:
+
+```bash
+# Create directories
+mkdir -p ~/.local/bin ~/.config/systemd/user ~/.context
+
+# Copy hook scripts
+cp hooks/*.sh ~/.local/bin/
+chmod +x ~/.local/bin/*.sh
+
+# Copy systemd units
+cp systemd/*.{timer,service} ~/.config/systemd/user/
+
+# Reload systemd
+systemctl --user daemon-reload
+
+# Enable timers
+systemctl --user enable --now claude-context-monitor.timer
+systemctl --user enable --now claude-search-cache-manager.timer
+systemctl --user enable --now claude-hooks-updater.timer
+systemctl --user enable --now claude-state-validator.timer
+systemctl --user enable --now claude-budget-analyzer.timer
+systemctl --user enable --now claude-performance-monitor.timer
+
+# Copy configuration (optional)
+cp settings.minimal.json ~/.claude/settings.json
+```
+
+## Configuration
+
+### Minimal vs Full Mode
+
+**Minimal Mode** (default, v1.1.0+):
+- Only 2 non-blocking hooks active
+- Better compatibility with Claude Code auto-accept
+- Systemd timers still provide monitoring
+
+**Full Mode** (archived):
+- All PreToolUse and PostToolUse hooks active
+- Strong orchestration enforcement
+- May interfere with auto-accept permissions
+
+See `CHANGELOG.md` for migration notes between modes.
+
+### Configuration Files
+
+- **~/.claude/settings.json** - Claude Code hooks configuration
+- **~/.context/shared-budget.json** - Budget and delegation tracking
+- **~/.context/search-cache.json** - Search result cache
+
+Example state files are available in `examples/` directory.
+
+## Usage
+
+### Verification Commands
+
+```bash
+# Verify all timers are running
 systemctl --user list-timers | grep claude
 
 # Check hook integrity
@@ -202,34 +150,153 @@ systemctl --user list-timers | grep claude
 # View context status
 ~/.local/bin/claude-context-monitor.sh --status
 
-# View cache stats
+# View cache statistics
 ~/.local/bin/claude-search-cache-manager.sh --stats
 
 # Generate budget report
 ~/.local/bin/claude-budget-analyzer.sh --report
 ```
 
-## Future Enhancements
+### Monitoring
 
-- Git-based hook updates from this repository
-- Advanced ML-based cache pre-warming
-- Grafana dashboard integration
-- Prometheus metrics export
-- Multi-channel notifications (Slack, Discord)
-- Performance optimization (parallel execution)
+View systemd service logs:
 
-## Notes
+```bash
+# Context monitor logs
+journalctl --user -u claude-context-monitor.service -n 50
 
-This repository is currently **private** for personal development and refinement. It will be sanitized and made public when ready for community use.
+# State validator logs
+journalctl --user -u claude-state-validator.service -n 50
 
-**Target Audience (when public):** Claude Code users on Arch Linux with systemd who want to optimize token usage through automated orchestration.
+# All claude services
+journalctl --user -u 'claude-*' -n 100
+```
+
+## Uninstallation
+
+```bash
+# Run uninstallation script
+./uninstall.sh
+```
+
+The uninstall script will:
+- Stop and disable all systemd timers
+- Remove hook scripts from `~/.local/bin/`
+- Remove systemd units
+- Optionally remove state directory (`~/.context/`)
+- Optionally restore settings backup
+
+## Troubleshooting
+
+### Common Issues
+
+**Timers not starting:**
+```bash
+# Check timer status
+systemctl --user status claude-context-monitor.timer
+
+# View timer logs
+journalctl --user -u claude-context-monitor.timer -n 20
+
+# Manually start timer
+systemctl --user start claude-context-monitor.timer
+```
+
+**Hooks not executing:**
+```bash
+# Verify hook scripts exist and are executable
+ls -lh ~/.local/bin/claude-*.sh
+
+# Test hook manually
+echo '{"tool_name":"Read"}' | ~/.local/bin/output-monitor.sh
+
+# Check Claude Code settings
+cat ~/.claude/settings.json | jq '.hooks'
+```
+
+**State file errors:**
+```bash
+# Validate state files
+jq empty < ~/.context/shared-budget.json
+jq empty < ~/.context/search-cache.json
+
+# Reset state files (use examples)
+cp examples/shared-budget.json.example ~/.context/shared-budget.json
+cp examples/search-cache.json.example ~/.context/search-cache.json
+```
+
+**Permission issues:**
+```bash
+# Fix hook script permissions
+chmod +x ~/.local/bin/claude-*.sh
+
+# Fix state directory permissions
+chmod 700 ~/.context
+```
+
+### Getting Help
+
+- **Issues:** Report bugs at [GitHub Issues](https://github.com/VZNcommunity/claude-code-orchestration-hooks/issues)
+- **Documentation:** See `CONTRIBUTING.md` for development setup
+- **Examples:** Check `examples/` directory for state file schemas
+
+## Performance
+
+- Hook overhead: <200ms average
+- Memory: 30-50MB per service (enforced)
+- CPU: 5-10% quota per service
+- Token reduction: Target 50-75% via delegation
+
+## Project Structure
+
+```
+claude-code-orchestration-hooks/
+├── README.md                    # This file
+├── LICENSE                      # MIT License
+├── CHANGELOG.md                 # Version history
+├── CONTRIBUTING.md              # Contribution guidelines
+├── install.sh                   # Installation script
+├── uninstall.sh                 # Uninstallation script
+├── hooks/                       # Hook scripts (10 files)
+├── systemd/                     # Systemd units (12 files)
+├── examples/                    # Example state files
+│   ├── README.md
+│   ├── shared-budget.json.example
+│   └── search-cache.json.example
+├── config/                      # Configuration files
+│   └── version-manifest.json
+├── docs/                        # Additional documentation
+│   └── IMPLEMENTATION-SUMMARY.md
+└── .github/
+    └── workflows/
+        └── validate.yml         # CI/CD validation
+```
+
+## Development
+
+See `CONTRIBUTING.md` for:
+- Development setup instructions
+- Code style guidelines
+- Testing procedures
+- Pull request workflow
+
+## Version History
+
+- **1.1.0** (2025-12-31) - Minimal configuration mode, public release
+- **1.0.0** (2025-11-23) - Initial release with full orchestration system
+
+See `CHANGELOG.md` for detailed version history.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+Built for the Claude Code community to optimize token usage through automated orchestration.
 
 ---
 
-**System Requirements:**
-- Arch Linux (or systemd-based distro)
-- Bash 5+
-- jq
-- Claude Code with MCP support
-- claude-orchestrator MCP server
-- claude-context MCP server (optional but recommended)
+**Contributing:** We welcome contributions! See `CONTRIBUTING.md` for guidelines.
+
+**Support:** Report issues or request features at [GitHub Issues](https://github.com/VZNcommunity/claude-code-orchestration-hooks/issues).
