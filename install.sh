@@ -89,7 +89,7 @@ if [ -f "$HOME/.claude/settings.json" ]; then
         cp settings.minimal.json "$HOME/.claude/settings.json"
         echo "Minimal hooks configuration applied"
     else
-        echo "ℹ️  Keeping existing settings"
+        echo "Keeping existing settings"
     fi
 else
     cp settings.minimal.json "$HOME/.claude/settings.json"
@@ -110,7 +110,7 @@ if [[ "$enable_response" =~ ^[Yy]$ ]]; then
     systemctl --user enable --now claude-performance-monitor.timer
     echo "All timers enabled and started"
 else
-    echo "ℹ️  Timers not enabled. Enable manually with:"
+    echo "Timers not enabled. Enable manually with:"
     echo "   systemctl --user enable --now claude-<timer-name>.timer"
 fi
 echo ""

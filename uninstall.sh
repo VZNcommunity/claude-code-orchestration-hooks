@@ -71,16 +71,17 @@ if [ -d "$HOME/.context" ]; then
         rm -rf "$HOME/.context"
         echo "State directory removed"
     else
-        echo "ℹ️  State directory kept"
+        echo "State directory kept"
     fi
 else
-    echo "ℹ️  No state directory found"
+    echo "No state directory found"
 fi
 echo ""
 
 # Handle Claude settings
 echo "[5/5] Claude Code settings..."
-if [ -f "$HOME/.claude/settings.json.backup."* ]; then
+backup_files=("$HOME/.claude/settings.json.backup."*)
+if [ -f "${backup_files[0]}" ]; then
     echo "Found settings backup(s). Restore from backup? (y/n)"
     read -r restore_settings
     if [[ "$restore_settings" =~ ^[Yy]$ ]]; then
@@ -88,10 +89,10 @@ if [ -f "$HOME/.claude/settings.json.backup."* ]; then
         cp "$latest_backup" "$HOME/.claude/settings.json"
         echo "Settings restored from: $(basename "$latest_backup")"
     else
-        echo "ℹ️  Settings not restored. You may want to manually edit ~/.claude/settings.json"
+        echo "Settings not restored. You may want to manually edit ~/.claude/settings.json"
     fi
 else
-    echo "ℹ️  No backup found. You may want to manually edit ~/.claude/settings.json to remove hooks"
+    echo "No backup found. You may want to manually edit ~/.claude/settings.json to remove hooks"
 fi
 echo ""
 

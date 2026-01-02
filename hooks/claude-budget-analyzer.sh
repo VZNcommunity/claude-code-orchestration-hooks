@@ -234,7 +234,7 @@ generate_report() {
         echo "  Excellent delegation rate - budgets optimized"
         echo "  💰 High ROI on token usage"
     else
-        echo "  ℹ️ Moderate delegation rate - room for improvement"
+        echo "  Moderate delegation rate - room for improvement"
         echo "  Monitor context usage during sessions"
     fi
 }
