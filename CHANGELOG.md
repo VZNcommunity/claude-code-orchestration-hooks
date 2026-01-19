@@ -149,6 +149,41 @@ PreToolUse and aggressive PostToolUse hooks prevented Claude Code from automatic
 
 The minimal configuration preserves monitoring capabilities (via systemd timers) while eliminating permission interference.
 
+## [1.2.0] - 2026-01-18
+
+### Added
+
+#### Non-Blocking Auto-Commit Hook
+- `auto-commit-async.sh` - Fully asynchronous auto-commit on Edit/Write operations
+  - **Key feature**: Outputs `"permissionDecision": "allow"` immediately, never blocks
+  - Background worker processes commits asynchronously via `nohup`
+  - 2-second batching delay to group rapid consecutive edits
+  - Queue-based file tracking in `~/.context/auto-commit-queue.json`
+  - Logging to `~/.context/auto-commit.log`
+  - Optional secret scanning integration (non-blocking)
+  - Graceful handling of lock contention (skips if locked)
+
+#### Configuration
+- New hook matcher for `Write|Edit` operations
+- 2-second timeout (vs 5 seconds for other hooks)
+- Compatible with auto-accept permissions
+
+### Changed
+- Updated `settings.minimal.json` to include auto-commit-async hook
+- README updated with new hook documentation
+
+### Technical Details
+The previous `auto-commit.sh` (v1.0.0) was disabled because it ran synchronously:
+- Git operations completed before returning
+- Could exceed 5-second timeout on large repos
+- Exit code 1 on secret detection blocked operations
+
+The new `auto-commit-async.sh` solves this by:
+1. Returning "allow" JSON first (line ~15)
+2. Queuing file path atomically
+3. Spawning detached background worker
+4. Worker waits 2s, batches files, then commits
+
 ## [Unreleased]
 
 ### Planned
@@ -159,11 +194,11 @@ The minimal configuration preserves monitoring capabilities (via systemd timers)
 - Multi-channel notifications (Slack, Discord)
 - Parallel hook execution optimization
 - Enhanced error recovery mechanisms
-- Public release preparation (sanitization)
 
 ---
 
 ## Version History
 
+- **1.2.0** (2026-01-18) - Non-blocking auto-commit hook
 - **1.1.0** (2025-12-31) - Minimal configuration mode (auto-accept fix)
 - **1.0.0** (2025-11-23) - Initial release with full orchestration system

@@ -36,6 +36,18 @@
             "suppressOutput": false
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "comment": "Non-blocking auto-commit (2026-01-18)",
+            "command": "$HOME/.local/bin/auto-commit-async.sh",
+            "timeout": 2,
+            "suppressOutput": false
+          }
+        ]
       }
     ]
   }

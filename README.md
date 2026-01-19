@@ -1,6 +1,6 @@
 # Claude Code Orchestration Hooks
 
-[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/VZNcommunity/claude-code-orchestration-hooks/releases/tag/v1.1.0)
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/VZNcommunity/claude-code-orchestration-hooks/releases/tag/v1.2.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Validate](https://github.com/VZNcommunity/claude-code-orchestration-hooks/actions/workflows/validate.yml/badge.svg)](https://github.com/VZNcommunity/claude-code-orchestration-hooks/actions/workflows/validate.yml)
 [![Shell](https://img.shields.io/badge/shell-bash%205.0%2B-orange.svg)](https://www.gnu.org/software/bash/)
@@ -28,6 +28,7 @@ Since version 1.1.0, the system runs in minimal mode for better compatibility wi
 
 - **output-monitor.sh** - Large output detection and context debt tracking
 - **auto-review-trigger.sh** - Code review suggestions after delegation
+- **auto-commit-async.sh** (v1.2.0) - Non-blocking auto-commit on Edit/Write operations
 
 ### Systemd Timers
 
@@ -284,6 +285,7 @@ See `CONTRIBUTING.md` for:
 
 ## Version History
 
+- **1.2.0** (2026-01-18) - Non-blocking auto-commit hook
 - **1.1.0** (2025-12-31) - Minimal configuration mode, public release
 - **1.0.0** (2025-11-23) - Initial release with full orchestration system
 
